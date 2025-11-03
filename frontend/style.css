@@ -1,3 +1,4 @@
+/* Reset and base style */
 * {
   margin: 0;
   padding: 0;
@@ -6,41 +7,61 @@
 }
 
 body {
-  background-color: #121212;
+  background-color: #0f1115;
   color: #f1f1f1;
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: flex-start; /* changed */
+  min-height: 100vh;
+  padding-top: 4rem; /* gives breathing space at top */
+  overflow-y: auto; /* allows natural scroll */
 }
 
+/* Main app container */
 .app {
-  background-color: #1e1e1e;
+  background-color: #1b1e24;
   padding: 2rem;
   border-radius: 1rem;
-  width: 350px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  width: 420px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.45);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+.app:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.55);
+}
+
+/* Heading */
 h1 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
   color: #00adb5;
+  letter-spacing: 1px;
 }
 
+/* Input section */
 .input-section {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.2rem;
 }
 
 input {
   flex: 1;
-  padding: 0.5rem;
-  border: none;
+  padding: 0.6rem 0.8rem;
+  border: 1px solid #333;
   border-radius: 0.5rem;
-  background-color: #2a2a2a;
+  background-color: #252931;
   color: white;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+input:focus {
+  outline: none;
+  border-color: #00adb5;
+  background-color: #2b3038;
 }
 
 button {
@@ -48,26 +69,60 @@ button {
   color: white;
   border: none;
   border-radius: 0.5rem;
-  padding: 0.5rem 1rem;
+  padding: 0.6rem 1rem;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
 button:hover {
   background-color: #00c3cc;
+  transform: scale(1.05);
 }
 
+/* Task list */
 ul {
   list-style: none;
+  margin-top: 0.5rem;
+  max-height: 60vh; /* prevent giant overflow */
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #00adb5 #1b1e24;
 }
 
+/* Scrollbar styling for WebKit browsers */
+ul::-webkit-scrollbar {
+  width: 6px;
+}
+
+ul::-webkit-scrollbar-thumb {
+  background-color: #00adb5;
+  border-radius: 10px;
+}
+
+/* Task item */
 li {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #2a2a2a;
-  padding: 0.6rem 0.8rem;
+  background-color: #2a2f38;
+  padding: 0.7rem 1rem;
   border-radius: 0.5rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.6rem;
+  transition: background-color 0.2s ease;
+}
+
+li:hover {
+  background-color: #343a45;
+}
+
+/* Task text */
+li span {
+  cursor: pointer;
+  flex-grow: 1;
+  font-size: 0.95rem;
+  word-break: break-word;
 }
 
 li.completed span {
@@ -75,14 +130,68 @@ li.completed span {
   color: #777;
 }
 
+/* Delete button */
 li button {
   background-color: transparent;
   color: #ff5c5c;
   border: none;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.1rem;
+  padding: 0.2rem 0.4rem;
+  transition: color 0.2s ease, transform 0.1s ease;
 }
 
 li button:hover {
-  color: #ff8b8b;
+  color: #ff7c7c;
+  transform: scale(1.1);
+}
+
+/* No tasks message */
+#task-list p {
+  color: #888;
+  text-align: center;
+  margin-top: 1rem;
+  font-style: italic;
+}
+
+/* Button group inside each task */
+.btn-group {
+  display: flex;
+  gap: 0.5rem;
+}
+
+/* Complete / Undo toggle button */
+.toggle-btn {
+  background-color: #00c896;
+  color: white;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.toggle-btn:hover {
+  background-color: #00e0aa;
+  transform: scale(1.05);
+}
+
+/* Delete button */
+.delete-btn {
+  background-color: #ff5c5c;
+  color: white;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.delete-btn:hover {
+  background-color: #ff7b7b;
+  transform: scale(1.05);
 }
