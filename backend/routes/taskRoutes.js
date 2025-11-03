@@ -1,16 +1,17 @@
 import express from "express" ;
 import Task from  "../models/Tasks.js" ;
+import auth from "../middleware/authMiddleware.js" ;
 
 const router = express.Router() ;
 
 // GET all tasks
-router.get("/", async (req, res)=>{
+router.get("/", auth,  async (req, res)=>{
     const tasks = await Task.find() ;
     res.json(tasks) ;
 });
 
 // POST new task
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   const { text } = req.body;
   if (!text) return res.status(400).json({ message: "Task text required" });
 
@@ -21,7 +22,7 @@ router.post("/", async (req, res) => {
 
 
 // PUT update (toggle complete)
-router.put("/:id", async (req, res) => {
+router.put("/:id", auth, async (req, res) => {
 
   const task = await Task.findById(req.params.id);
   if (!task) return res.status(404).json({ message: "Not found" });
