@@ -195,3 +195,24 @@ li button:hover {
   background-color: #ff7b7b;
   transform: scale(1.05);
 }
+.auth-page {
+  text-align: center;
+}
+
+.auth-page input {
+  display: block;
+  width: 100%;
+  margin-bottom: 0.8rem;
+}
+
+.auth-btns {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.logout {
+  background-color: #ff5c5c;
+  margin-top: 1rem;
+  width: 100%;
+}

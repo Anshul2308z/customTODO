@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Register</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app auth-page">
+    <h1>Hey there👋, Sign-Up / Login HERE</h1>
+
+    <div id="auth-section">
+      <input id="username" type="text" placeholder="Username" />
+      <input id="password" type="password" placeholder="Password" />
+      <div class="auth-btns">
+        <button id="login-btn">Login</button>
+        <button id="register-btn">Register</button>
+      </div>
+    </div>
+
+    <p id="auth-message" style="text-align:center; color:#aaa; margin-top:10px;"></p>
+  </div>
+
+  <script>
+    const API_URL = "http://localhost:5000/api";
+    const usernameInput = document.getElementById("username");
+    const passwordInput = document.getElementById("password");
+    const loginBtn = document.getElementById("login-btn");
+    const registerBtn = document.getElementById("register-btn");
+    const msg = document.getElementById("auth-message");
+
+    // Redirect if already logged in
+    if (localStorage.getItem("token")) {
+      window.location.href = "index.html";
+    }
+
+    registerBtn.addEventListener("click", async () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!username || !password) return showMsg("Enter both fields", "red");
+
+      const res = await fetch(`${API_URL}/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (res.ok) {
+        showMsg("Registration successful! Please login.", "lightgreen");
+      } else {
+        const data = await res.json();
+        showMsg(data.message || "User already exists", "red");
+      }
+    });
+
+    loginBtn.addEventListener("click", async () => {
+      const username = usernameInput.value.trim();
+      const password = passwordInput.value.trim();
+      if (!username || !password) return showMsg("Enter both fields", "red");
+
+      const res = await fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("token", data.token);
+        window.location.href = "index.html";
+      } else {
+        showMsg(data.message || "Invalid credentials", "red");
+      }
+    });
+
+    function showMsg(text, color = "#aaa") {
+      msg.style.color = color;
+      msg.textContent = text;
+    }
+  </script>
+</body>
+</html>

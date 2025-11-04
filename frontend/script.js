@@ -1,90 +1,80 @@
-// Selecting elements
-const taskInput = document.getElementById('task-input');
-const addBtn = document.getElementById('add-btn');
-const taskList = document.getElementById('task-list');
+const API_URL = "http://localhost:5000/api";
+const token = localStorage.getItem("token");
 
-// Connecting Backend API 
-const API_URL = "http://localhost:5000/api/tasks";
-let tasks = [];
-
-// Fetch tasks on load
-fetchTasks();
-
-// Fetch all tasks
-async function fetchTasks() {
-  try {
-    const res = await fetch(API_URL);
-    tasks = await res.json();
-    renderTasks();
-  } catch (err) {
-    console.error("Error fetching tasks:", err);
-  }
+// Redirect to login if not logged in
+if (!token) {
+  window.location.href = "login.html";
 }
 
-// Add a new task
+const taskInput = document.getElementById("task-input");
+const addBtn = document.getElementById("add-btn");
+const taskList = document.getElementById("task-list");
+const logoutBtn = document.getElementById("logout-btn");
+
+async function fetchTasks() {
+  const res = await fetch(`${API_URL}/tasks`, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  const tasks = await res.json();
+  renderTasks(tasks);
+}
+
 addBtn.addEventListener("click", async () => {
   const text = taskInput.value.trim();
-  if (text === "") return;
-
-  try {
-    await fetch(API_URL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
-    taskInput.value = "";
-    fetchTasks(); // refresh list
-  } catch (err) {
-    console.error("Error adding task:", err);
-  }
+  if (!text) return;
+  await fetch(`${API_URL}/tasks`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ text }),
+  });
+  taskInput.value = "";
+  fetchTasks();
 });
 
-// Delete a task
 async function deleteTask(id) {
-  try {
-    await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-    fetchTasks();
-  } catch (err) {
-    console.error("Error deleting task:", err);
-  }
+  await fetch(`${API_URL}/tasks/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  fetchTasks();
 }
 
-// Toggle complete
 async function toggleTask(id) {
-  try {
-    await fetch(`${API_URL}/${id}`, { method: "PUT" });
-    fetchTasks();
-  } catch (err) {
-    console.error("Error toggling task:", err);
-  }
+  await fetch(`${API_URL}/tasks/${id}`, {
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+  fetchTasks();
 }
 
-// Render tasks to UI
-function renderTasks() {
-  taskList.innerHTML = '';
-
+function renderTasks(tasks) {
+  taskList.innerHTML = "";
   if (tasks.length === 0) {
-    taskList.innerHTML = "<p style='text-align:center;color:#888;'>No tasks yet</p>";
+    taskList.innerHTML = "<p>No tasks yet</p>";
     return;
   }
+  tasks.forEach((t) => {
+    const li = document.createElement("li");
+    li.className = t.completed ? "completed" : "";
+    li.innerHTML = `
+      <span onclick="toggleTask('${t._id}')">${t.text}</span>
+      <div class="btn-group">
+        <button class="toggle-btn" onclick="toggleTask('${t._id}')">
+          ${t.completed ? "Undo" : "Complete"}
+        </button>
+        <button class="delete-btn" onclick="deleteTask('${t._id}')">Delete</button>
+      </div>
+    `;
+    taskList.appendChild(li);
+  });
+}
 
-tasks.forEach((task) => {
-  const li = document.createElement('li');
-  li.className = task.completed ? 'completed' : '';
-
-  li.innerHTML = `
-    <span>${task.text}</span>
-    <div class="btn-group">
-      <button class="toggle-btn" onclick="toggleTask('${task._id}')">
-        ${task.completed ? 'Undo' : 'Complete'}
-      </button>
-      <button class="delete-btn" onclick="deleteTask('${task._id}')">
-        Delete
-      </button>
-    </div>
-  `;
-
-  taskList.appendChild(li);
+logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("token");
+  window.location.href = "login.html";
 });
 
-}
+fetchTasks();
